@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(200)
+  price       Int
+  zipcode     String   @db.VarChar(12)
+  seller      String
+  thumbnailHd String
+  date        DateTime @default(now())
+}
+
+model Buy {
+  purchase_id  Int       @id @default(autoincrement())
+  client_id    Int
+  client_name  String
+  total_to_pay Int
+  card         Card[]
+  historico    History[]
+
+}
+
+model History {
+  id          Int      @id @default(autoincrement())
+  client_id   Int
+  buyId       Int?
+  value       Int
+  date        DateTime
+  card_number String
+  Buy         Buy?     @relation(fields: [buyId], references: [purchase_id])
+}
+
+model Card {
+  id               Int    @id @default(autoincrement())
+  card_number      String
+  card_holder_name String
+  value            Int
+  cvv              Int
+  buyId            Int?
+  buy              Buy?   @relation(fields: [buyId], references: [purchase_id])
+}
+
+model User {
+  name     String @id
+  password String
+  userName String
+}
